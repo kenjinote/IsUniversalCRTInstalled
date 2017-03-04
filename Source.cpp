@@ -8,11 +8,11 @@ TCHAR szClassName[] = TEXT("Window");
 
 BOOL IsUniversalCRTInstalled()
 {
-	LPCWSTR lpszPath = L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\SideBySide\\Winners";
-	std::vector<std::wstring> keylist;
+	LPCWSTR lpszSearchPath = L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\SideBySide\\Winners";
+	std::vector<std::wstring>keylist;
 	WCHAR szTemp[1024];
 	HKEY hKey;
-	if (RegOpenKeyEx(HKEY_LOCAL_MACHINE, lpszPath, 0, KEY_READ | KEY_WOW64_64KEY, &hKey) == ERROR_SUCCESS)
+	if (RegOpenKeyExW(HKEY_LOCAL_MACHINE, lpszSearchPath, 0, KEY_READ | KEY_WOW64_64KEY, &hKey) == ERROR_SUCCESS)
 	{
 		DWORD cSubKeys = 0;
 		if (RegQueryInfoKeyW(hKey, 0, 0, 0, &cSubKeys, 0, 0, 0, 0, 0, 0, 0) == ERROR_SUCCESS && cSubKeys)
@@ -26,8 +26,8 @@ BOOL IsUniversalCRTInstalled()
 					{
 						if (szTemp[0] != architecture[0]) continue;
 						WCHAR szKey[1024];
-						lstrcpy(szKey, architecture);
-						lstrcat(szKey, TEXT("_microsoft-windows-ucrt_31bf3856ad364e35"));
+						lstrcpyW(szKey, architecture);
+						lstrcatW(szKey, L"_microsoft-windows-ucrt_31bf3856ad364e35");
 						const int nKeyLength = lstrlenW(szKey);
 						if (CompareStringW(LOCALE_SYSTEM_DEFAULT, NORM_IGNORECASE, szKey, nKeyLength, szTemp, nKeyLength) == CSTR_EQUAL)
 						{
@@ -45,16 +45,16 @@ BOOL IsUniversalCRTInstalled()
 	}
 	for (auto key : keylist)
 	{
-		lstrcpy(szTemp, lpszPath);
-		lstrcat(szTemp, TEXT("\\"));
-		lstrcat(szTemp, key.c_str());
-		if (RegOpenKeyEx(HKEY_LOCAL_MACHINE, szTemp, 0, KEY_READ | KEY_WOW64_64KEY, &hKey) == ERROR_SUCCESS)
+		lstrcpyW(szTemp, lpszSearchPath);
+		lstrcatW(szTemp, L"\\");
+		lstrcatW(szTemp, key.c_str());
+		if (RegOpenKeyExW(HKEY_LOCAL_MACHINE, szTemp, 0, KEY_READ | KEY_WOW64_64KEY, &hKey) == ERROR_SUCCESS)
 		{
 			DWORD dwType = REG_SZ;
 			DWORD cbName = _countof(szTemp);
 			if (RegQueryValueEx(hKey, 0, 0, &dwType, (LPBYTE)szTemp, &cbName) == ERROR_SUCCESS)
 			{
-				if (lstrlen(szTemp) > 0)
+				if (lstrlenW(szTemp) > 0)
 				{
 					RegCloseKey(hKey);
 					return TRUE;
