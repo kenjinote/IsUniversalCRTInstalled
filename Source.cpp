@@ -72,7 +72,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	switch (msg)
 	{
 	case WM_CREATE:
-		hButton = CreateWindow(TEXT("BUTTON"), TEXT("Universl CRT がインストールされているかどうか判定"), WS_VISIBLE | WS_CHILD, 0, 0, 0, 0, hWnd, (HMENU)IDOK, ((LPCREATESTRUCT)lParam)->hInstance, 0);
+		hButton = CreateWindow(TEXT("BUTTON"), TEXT("Universal CRT がインストールされているかどうか判定"), WS_VISIBLE | WS_CHILD, 0, 0, 0, 0, hWnd, (HMENU)IDOK, ((LPCREATESTRUCT)lParam)->hInstance, 0);
 		break;
 	case WM_SIZE:
 		MoveWindow(hButton, 10, 10, 512, 32, TRUE);
@@ -80,7 +80,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	case WM_COMMAND:
 		if (LOWORD(wParam) == IDOK)
 		{
-			MessageBox(hWnd, IsUniversalCRTInstalled() ? TEXT("Universl CRT はインストールされています。") : TEXT("Universl CRT はインストールされていません。"), TEXT("確認"), 0);
+			MessageBox(hWnd, IsUniversalCRTInstalled() ? TEXT("Universal CRT はインストールされています。") : TEXT("Universl CRT はインストールされていません。"), TEXT("確認"), 0);
 		}
 		break;
 	case WM_DESTROY:
@@ -110,7 +110,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPreInst, LPSTR pCmdLine, int 
 	RegisterClass(&wndclass);
 	HWND hWnd = CreateWindow(
 		szClassName,
-		TEXT("Universl CRT がインストールされているかどうか判定"),
+		TEXT("Universal CRT がインストールされているかどうか判定"),
 		WS_OVERLAPPEDWINDOW,
 		CW_USEDEFAULT,
 		0,
