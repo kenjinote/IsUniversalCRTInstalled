@@ -6,7 +6,8 @@
 
 TCHAR szClassName[] = TEXT("Window");
 
-BOOL IsUniversalCRTInstalled()
+// レジストリを参照し、Universal CRT がインストールされているかチェックする
+BOOL IsUniversalCRTInstalled1()
 {
 	LPCWSTR lpszSearchPath = L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\SideBySide\\Winners";
 	std::vector<std::wstring>keylist;
@@ -66,21 +67,41 @@ BOOL IsUniversalCRTInstalled()
 	return FALSE;
 }
 
+// Universal CRT のモジュール（ucrtbase.dll）がロードできるかどうかチェックする
+BOOL IsUniversalCRTInstalled2()
+{
+	BOOL bIsInstalled = FALSE;
+	HMODULE hModule = LoadLibrary(TEXT("ucrtbase.dll"));
+	if (hModule)
+	{
+		bIsInstalled = TRUE;
+		FreeLibrary(hModule);
+	}
+	return bIsInstalled;
+}
+
 LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
-	static HWND hButton;
+	static HWND hButton1;
+	static HWND hButton2;
 	switch (msg)
 	{
 	case WM_CREATE:
-		hButton = CreateWindow(TEXT("BUTTON"), TEXT("Universal CRT がインストールされているかどうか判定"), WS_VISIBLE | WS_CHILD, 0, 0, 0, 0, hWnd, (HMENU)IDOK, ((LPCREATESTRUCT)lParam)->hInstance, 0);
+		hButton1 = CreateWindow(TEXT("BUTTON"), TEXT("Universal CRT がインストールされているかどうか判定 その①"), WS_VISIBLE | WS_CHILD, 0, 0, 0, 0, hWnd, (HMENU)1000, ((LPCREATESTRUCT)lParam)->hInstance, 0);
+		hButton2 = CreateWindow(TEXT("BUTTON"), TEXT("Universal CRT がインストールされているかどうか判定 その②"), WS_VISIBLE | WS_CHILD, 0, 0, 0, 0, hWnd, (HMENU)1001, ((LPCREATESTRUCT)lParam)->hInstance, 0);
 		break;
 	case WM_SIZE:
-		MoveWindow(hButton, 10, 10, 512, 32, TRUE);
+		MoveWindow(hButton1, 10, 10, 512, 32, TRUE);
+		MoveWindow(hButton2, 10, 50, 512, 32, TRUE);
 		break;
 	case WM_COMMAND:
-		if (LOWORD(wParam) == IDOK)
+		if (LOWORD(wParam) == 1000)
 		{
-			MessageBox(hWnd, IsUniversalCRTInstalled() ? TEXT("Universal CRT はインストールされています。") : TEXT("Universl CRT はインストールされていません。"), TEXT("確認"), 0);
+			MessageBox(hWnd, IsUniversalCRTInstalled1() ? TEXT("Universal CRT はインストールされています。") : TEXT("Universl CRT はインストールされていません。"), TEXT("確認"), 0);
+		}
+		else if (LOWORD(wParam) == 1001)
+		{
+			MessageBox(hWnd, IsUniversalCRTInstalled2() ? TEXT("Universal CRT はインストールされています。") : TEXT("Universl CRT はインストールされていません。"), TEXT("確認"), 0);
 		}
 		break;
 	case WM_DESTROY:
